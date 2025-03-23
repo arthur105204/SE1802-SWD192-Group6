@@ -26,17 +26,34 @@ jobs:
           cd client
           npm install --legacy-peer-deps
           npm run build
+          cd ..
+          mkdir API/wwwroot
+          xcopy /E /I client/dist/* API/wwwroot/
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.x'
+          dotnet-version: '9.0.x'
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+
+      # Add environment variables
+      - name: Add appsettings.json
+        run: |
+          echo {
+            "ConnectionStrings": {
+              "DefaultConnection": "${{ secrets.DB_CONNECTION }}"
+            },
+            "StripeSettings": {
+              "PublishableKey": "${{ secrets.STRIPE_PUBLISHABLE_KEY }}",
+              "SecretKey": "${{ secrets.STRIPE_SECRET_KEY }}",
+              "WhSecret": "${{ secrets.STRIPE_WH_SECRET }}"
+            }
+          } > "${{env.DOTNET_ROOT}}/myapp/appsettings.json"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4

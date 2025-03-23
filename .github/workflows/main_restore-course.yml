@@ -27,7 +27,6 @@ jobs:
           npm install --legacy-peer-deps
           npm run build
           cd ..
-          mkdir API/wwwroot
           xcopy /E /I client/dist/* API/wwwroot/
 
       - name: Set up .NET Core

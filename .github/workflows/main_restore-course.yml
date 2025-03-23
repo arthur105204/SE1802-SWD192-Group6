@@ -27,8 +27,8 @@ jobs:
           npm install --legacy-peer-deps
           npm run build
           cd ..
-          if not exist "API\wwwroot" mkdir "API\wwwroot"
-          xcopy /S /Y "client\dist\*" "API\wwwroot\"
+          mkdir "API\wwwroot" 2>NUL || echo "Directory exists"
+          robocopy "client\dist" "API\wwwroot" /E
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
